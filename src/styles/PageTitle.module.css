@@ -1,0 +1,8 @@
+.pageTopImage::before {
+    content: "";
+    display: block;
+    width: 100px;
+    height: 100px;
+    background-image: var(--background-image-url);
+    background-size: cover;
+}
