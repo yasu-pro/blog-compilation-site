@@ -1,13 +1,8 @@
 import React from "react";
-import type { Post } from "../types/types";
+import type { Posts } from "../types/types";
 import BlogItem from "./BlogItem";
 
-type BlogArchiveProps = {
-    posts: Post[];
-};
-
-const BlogArchive: React.FC<BlogArchiveProps> = ({ posts }) => {
-console.log({posts});
+const BlogArchive: React.FC<Posts> = ({ posts }) => {
 
     return (
         <div className="mt-5 md:mt-10 px-2 md:pr-8">

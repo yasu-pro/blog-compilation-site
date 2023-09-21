@@ -1,10 +1,11 @@
 import React from "react";
 import Image from 'next/image';
 import { format } from "date-fns";
+import { Post } from "../types/types";
 
-const BlogItem: React.FC<{ postData: postDataType }> = ({ post }) => {
+const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
 
-    const createCategoryTag: React.FC<{ categoryArray: string[] }> = ({ categoryArray }) => {
+    const createCategoryTag: React.FC<{ categoryArray: (string | null)[] }> = ({ categoryArray }) => {
         return (
             categoryArray
                 .filter((categoryData) => categoryData !== null)
@@ -15,29 +16,27 @@ const BlogItem: React.FC<{ postData: postDataType }> = ({ post }) => {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL as string;
-    let postThumbnailUrl: string = "/images/noImage.jpg";
-    let postThumbnailAlt: string = "ブログ画像"
+
+    let categoryArray: string[] = [];
+    if (Array.isArray(post.categories)) {
+        categoryArray = post.categories.flatMap(categoryData => {
+            return categoryData?.nodes?.map(category => category?.name) || [];
+        });
+    }
 
     const content = {
         postUrl: `${baseUrl}${post.uri}`,
         title: post.title,
         content: post.content,
         date: format(new Date(post.date), "MMM yy, dd"),
-        categoryArray: post.categories.nodes.map(categoryData => categoryData.name)
-    }
+        categoryArray: categoryArray,
+        eyecatch: {
+            url: post.featuredImage?.node?.sourceUrl,
+            alt: post.featuredImage?.node?.altText,
+            height: 320,
+            width: 560,
+        }
 
-    if (post.featuredImage) {
-        content.eyecatch = {
-            url: post.featuredImage.post.sourceUrl,
-            alt: post.featuredImage.post.altText,
-            height: post.featuredImage.posts.mediaDetails.height,
-            width: post.featuredImage.posts.mediaDetails.width,
-        }
-    } else {
-        content.eyecatch = {
-            url: postThumbnailUrl,
-            alt: postThumbnailAlt,
-        }
     }
 
     return (
@@ -45,7 +44,7 @@ const BlogItem: React.FC<{ postData: postDataType }> = ({ post }) => {
             <a href={content.postUrl} target="_blank" className="block h-full p-1 md:p-4 transition transform rounded-md hover:scale-105 hover:bg-gray-200">
                 <div className="flex flex-col">
                     <div className="w-full h-240">
-                        <Image className="object-cover w-full h-full rounded-lg" src={content.eyecatch.url} alt={content.eyecatch.alt} width={500} height={300} />
+                        <Image className="object-cover w-full h-full rounded-lg" src={content.eyecatch.url ?? "/images/noImage.jpg"} alt={content.eyecatch.alt?? "ブログ画像"} width={500} height={300} />
                     </div>
                     <div className="mt-2 md:mt-6">
                         <div className="flex flex-col items-start">

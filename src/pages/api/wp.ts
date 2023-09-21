@@ -1,27 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import fetchAPI from '../../lib/fetchAPI';
+const fetchAPI = (query: any): Promise<object> => {
+    const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
+    const headers = { 'Content-Type': 'application/json' };
 
-type Data = {
-    data?: any;
-    error?: string;
-};
-
-export default async function handler(
-        req: NextApiRequest,
-        res: NextApiResponse<Data>
-    ) {
-    if (req.method !== 'POST') {
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-        return;
-    }
-
-    const { query } = req.body;
     try {
-        const data = await fetchAPI(query, {
-        variables: {},
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+            query,
+            }),
         });
-        res.status(200).json({ data });
+
+        if (!response.ok) {
+        throw new Error('Network response was not ok');
+        }
+
+        const jsonData = await response.json();
+        return jsonData;
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch data' });
+        console.error('Fetchエラー:', error);
+        throw error;
     }
 }
+
+export default fetchAPI

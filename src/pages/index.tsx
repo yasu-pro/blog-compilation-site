@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import BlogArchive from '../components/BlogArchive';
 import PageTitle from '../components/PageTitle';
-import { Post, Props } from '../types/types';
+import { Post } from '../types/types';
 
 const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
 
@@ -27,7 +27,7 @@ const Home = () => {
   }, []);
 
 
-  async function fetchAPI(query: any, { variables }: any = {}): Promise<object> {
+  async function fetchAPI(query: any): Promise<object> {
     const headers = { 'Content-Type': 'application/json' };
 
     try {
@@ -36,7 +36,6 @@ const Home = () => {
         headers,
         body: JSON.stringify({
           query,
-          variables,
         }),
       });
 
@@ -44,63 +43,63 @@ const Home = () => {
         throw new Error('Network response was not ok');
       }
 
-      const responseData = await response.json();
-      return responseData.data;
+      const jsonData = await response.json();
+      return jsonData;
     } catch (error) {
       console.error('Fetchエラー:', error);
       throw error;
     }
   }
 
-  async function getAllPosts(limit = 100) {
-    const variables = {
-      limit,
-    };
-    const query = `
-      query getAllSlugs {
-        posts {
-          nodes {
-            id
-            postId
-            date
-            content
-            title
-            slug
-            uri
-            featuredImage {
-              node {
-                sourceUrl
-                altText
-                mediaDetails {
-                  height
-                  width
+  const getAllPosts = useCallback(
+    async () => {
+      const query = `
+        query GetAllPosts {
+          posts(first: 200) {
+            nodes {
+              id
+              postId
+              date
+              content
+              title
+              slug
+              uri
+              featuredImage {
+                node {
+                  sourceUrl
+                  altText
+                  mediaDetails {
+                    height
+                    width
+                  }
                 }
               }
-            }
-            categories {
-              nodes {
-                name
-                link
+              categories {
+                nodes {
+                  name
+                  link
+                }
               }
             }
           }
         }
+      `;
+
+      try {
+        const response = await fetchAPI(query)
+        const postsNodesData = response.data.posts.nodes
+
+        setPosts(postsNodesData);
+
+        return postsNodesData
+      } catch (err) {
+        console.log('~~ getAllPosts ~~');
+        console.log(err);
+        throw err;
       }
-    `;
-
-    try {
-      const response = await fetchAPI(query, variables);
-      const postsNodesData = response.posts.nodes
-
-      setPosts(postsNodesData);
-
-      return postsNodesData
-    } catch (err) {
-      console.log('~~ getAllPosts ~~');
-      console.log(err);
-      throw err;
-    }
-  }
+    },
+  []
+)
 
   return (
     <main>
