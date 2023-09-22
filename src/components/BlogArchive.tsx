@@ -2,6 +2,7 @@ import React from "react";
 import type { Posts } from "../types/types";
 import BlogItem from "./BlogItem";
 
+
 const BlogArchive: React.FC<Posts> = ({ posts }) => {
 
     return (

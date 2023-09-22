@@ -4,58 +4,31 @@ import Header from '../components/Header';
 import BlogArchive from '../components/BlogArchive';
 import PageTitle from '../components/PageTitle';
 import { Post } from '../types/types';
-
-const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
+import fetchAPI from './api/wp';
+import Pagination from '../components/Pagination';
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<null | string>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [endCursor, setEndCursor] = useState<string | null>(null); // 最後の記事のカーソル値を保持する state
+  const first = 10;
+  const [pageInfo, setPageInfo] = useState({}); // 空のオブジェクトに初期化
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const fetchedPosts = await getAllPosts();
-
-        return fetchedPosts
-      } catch (err) {
-        setError('データの取得に失敗しました');
-        console.error(err);
-      }
-    }
-
     fetchData();
-  }, []);
+  }, [currentPage, endCursor]);
 
-
-  async function fetchAPI(query: any): Promise<object> {
-    const headers = { 'Content-Type': 'application/json' };
-
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          query,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const jsonData = await response.json();
-      return jsonData;
-    } catch (error) {
-      console.error('Fetchエラー:', error);
-      throw error;
-    }
-  }
-
-  const getAllPosts = useCallback(
-    async () => {
+  const fetchData = useCallback(async () => {
+    if (currentPage > 0 && endCursor === null) {
       const query = `
-        query GetAllPosts {
-          posts(first: 200) {
+        query GetAllPosts($first: Int, $after: String) {
+          posts(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              endCursor
+            }
             nodes {
               id
               postId
@@ -85,27 +58,52 @@ const Home = () => {
         }
       `;
 
+      const variables = {
+        first: first,
+        after: endCursor,
+      };
+
       try {
-        const response = await fetchAPI(query)
-        const postsNodesData = response.data.posts.nodes
+        const response = await fetchAPI(query, variables);
+        console.log(response);
 
-        setPosts(postsNodesData);
+        const postsNodesData = response.data.posts.nodes;
 
-        return postsNodesData
+        if (currentPage === 1) {
+          setPosts(postsNodesData);
+        } else {
+          setPosts((prevPosts) => [...prevPosts, ...postsNodesData]);
+        }
+        setPageInfo(response.data.posts.pageInfo);
+        setEndCursor(response.data.posts.pageInfo.endCursor);
       } catch (err) {
+        setError('データの取得に失敗しました');
         console.log('~~ getAllPosts ~~');
-        console.log(err);
-        throw err;
+        console.error(err);
       }
-    },
-  []
-)
+    }
+  }, [currentPage, endCursor]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    setEndCursor(null); // ページ切り替え時にendCursorをリセット
+  };
+
+  const shouldRenderPagination = (pageInfo.hasNextPage || pageInfo.hasPreviousPage) && Object.keys(pageInfo).length > 0;
 
   return (
     <main>
       <Header />
       <PageTitle title='Blog Compilation Site' />
       <BlogArchive posts={posts} />
+      {shouldRenderPagination && (
+        <Pagination
+          currentPage={currentPage}
+          hasNextPage={pageInfo.hasNextPage}
+          hasPreviousPage={pageInfo.hasPreviousPage}
+          onPageChange={handlePageChange}
+        />
+      )}
       <Footer />
     </main>
   );

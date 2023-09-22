@@ -1,4 +1,4 @@
-const fetchAPI = (query: any): Promise<object> => {
+const fetchAPI = async (query: string, variables: object): Promise<object> => {
     const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL as string;
     const headers = { 'Content-Type': 'application/json' };
 
@@ -7,12 +7,13 @@ const fetchAPI = (query: any): Promise<object> => {
             method: 'POST',
             headers,
             body: JSON.stringify({
-            query,
+                query,
+                variables,
             }),
         });
 
         if (!response.ok) {
-        throw new Error('Network response was not ok');
+            throw new Error('Network response was not ok');
         }
 
         const jsonData = await response.json();
