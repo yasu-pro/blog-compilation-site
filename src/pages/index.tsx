@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 import BlogArchive from '../components/BlogArchive';
-import PageTitle from '../components/PageTitle';
 import { Post } from '../types/types';
-import fetchAPI from './api/wp';
+import fetchAPI from './api/fetchAPI';
 import Pagination from '../components/Pagination';
+import { GET_POSTS_BY_CURSOR_QUERY } from '../graphql/GraphQLQueries';
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -86,27 +85,20 @@ const Home = () => {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    setEndCursor(null); // ページ切り替え時にendCursorをリセット
+    setEndCursor(null);
   };
 
-  const shouldRenderPagination = (pageInfo.hasNextPage || pageInfo.hasPreviousPage) && Object.keys(pageInfo).length > 0;
-
   return (
-    <main>
-      <Header />
-      <PageTitle title='Blog Compilation Site' />
+    <Layout>
       <BlogArchive posts={posts} />
-      {shouldRenderPagination && (
-        <Pagination
-          currentPage={currentPage}
-          hasNextPage={pageInfo.hasNextPage}
-          hasPreviousPage={pageInfo.hasPreviousPage}
-          onPageChange={handlePageChange}
-        />
-      )}
-      <Footer />
-    </main>
+      <Pagination
+        currentPage={currentPage}
+        hasNextPage={pageInfo.hasNextPage}
+        hasPreviousPage={pageInfo.hasPreviousPage}
+        onPageChange={handlePageChange}
+      />
+    </Layout>
   );
-};
+}
 
 export default Home;
