@@ -1,111 +1,82 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 import BlogArchive from '../components/BlogArchive';
-import PageTitle from '../components/PageTitle';
 import { Post } from '../types/types';
-import fetchAPI from './api/wp';
+import fetchAPI from './api/fetchAPI';
 import Pagination from '../components/Pagination';
+import { GET_POSTS_BY_CURSOR_QUERY } from '../graphql/GraphQLQueries'
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [changePosts, setChangePosts] = useState<Post[]>([]);
   const [error, setError] = useState<null | string>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [endCursor, setEndCursor] = useState<string | null>(null); // 最後の記事のカーソル値を保持する state
-  const first = 10;
-  const [pageInfo, setPageInfo] = useState({}); // 空のオブジェクトに初期化
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageInfo, setPageInfo] = useState(null);
+
+  const first = 100;
+  const PAGE_SIZE = 5;
+
+  const fetchData = async () => {
+    const query = GET_POSTS_BY_CURSOR_QUERY;
+
+    const variables = {
+      first: first,
+      after: null,
+    };
+
+    try {
+      const response = await fetchAPI(query, variables);
+      const postsNodesData = response.data.posts.edges;
+      console.log(response);
+
+      setPosts(postsNodesData);
+      setPageInfo(response.data.posts.pageInfo);
+      setEndCursor(response.data.posts.pageInfo.endCursor)
+    } catch (err) {
+      setError('データの取得に失敗しました');
+      console.log('データの取得エラー:', err);
+    }
+  };
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, endCursor]);
+  }, [posts,currentPage,pageInfo]);
 
-  const fetchData = useCallback(async () => {
-    if (currentPage > 0 && endCursor === null) {
-      const query = `
-        query GetAllPosts($first: Int, $after: String) {
-          posts(first: $first, after: $after) {
-            pageInfo {
-              hasNextPage
-              hasPreviousPage
-              endCursor
-            }
-            nodes {
-              id
-              postId
-              date
-              content
-              title
-              slug
-              uri
-              featuredImage {
-                node {
-                  sourceUrl
-                  altText
-                  mediaDetails {
-                    height
-                    width
-                  }
-                }
-              }
-              categories {
-                nodes {
-                  name
-                  link
-                }
-              }
-            }
-          }
-        }
-      `;
+  useEffect(()=>{
+    changePostsData(currentPage)
+  },[currentPage, posts])
 
-      const variables = {
-        first: first,
-        after: endCursor,
-      };
+  const totalPage: number = posts.length
 
-      try {
-        const response = await fetchAPI(query, variables);
-        console.log(response);
+  const changePostsData = (page) => {
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const newPosts = posts.slice(start, end);
+    setChangePosts(newPosts);
+  }
 
-        const postsNodesData = response.data.posts.nodes;
-
-        if (currentPage === 1) {
-          setPosts(postsNodesData);
-        } else {
-          setPosts((prevPosts) => [...prevPosts, ...postsNodesData]);
-        }
-        setPageInfo(response.data.posts.pageInfo);
-        setEndCursor(response.data.posts.pageInfo.endCursor);
-      } catch (err) {
-        setError('データの取得に失敗しました');
-        console.log('~~ getAllPosts ~~');
-        console.error(err);
-      }
-    }
-  }, [currentPage, endCursor]);
 
   const handlePageChange = (newPage) => {
+    console.log(newPage);
     setCurrentPage(newPage);
-    setEndCursor(null); // ページ切り替え時にendCursorをリセット
   };
 
-  const shouldRenderPagination = (pageInfo.hasNextPage || pageInfo.hasPreviousPage) && Object.keys(pageInfo).length > 0;
-
   return (
-    <main>
-      <Header />
-      <PageTitle title='Blog Compilation Site' />
-      <BlogArchive posts={posts} />
-      {shouldRenderPagination && (
-        <Pagination
-          currentPage={currentPage}
-          hasNextPage={pageInfo.hasNextPage}
-          hasPreviousPage={pageInfo.hasPreviousPage}
-          onPageChange={handlePageChange}
-        />
+    <Layout>
+      {pageInfo ? (
+        <>
+          <BlogArchive posts={changePosts} />
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            totalPage={totalPage}
+            pageSize={PAGE_SIZE}
+          />
+        </>
+      ):(
+        <p>Loading...</p>
       )}
-      <Footer />
-    </main>
+    </Layout>
   );
 };
 

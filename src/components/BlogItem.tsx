@@ -5,6 +5,8 @@ import { Post } from "../types/types";
 
 const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
 
+    // console.log("postpostpostpostpost",post);
+
     const createCategoryTag: React.FC<{ categoryArray: (string | null)[] }> = ({ categoryArray }) => {
         return (
             categoryArray
@@ -41,7 +43,7 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
 
     return (
         <article className="h-full">
-            <a href={content.postUrl} target="_blank" className="block h-full p-1 md:p-4 transition transform rounded-md hover:scale-105 hover:bg-gray-200">
+            <a href={content.postUrl} target="_blank" className="block h-full p-1 transition transform rounded-md md:p-4 hover:scale-105 hover:bg-gray-200">
                 <div className="flex flex-col">
                     <div className="w-full h-240">
                         <Image className="object-cover w-full h-full rounded-lg" src={content.eyecatch.url ?? "/images/noImage.jpg"} alt={content.eyecatch.alt?? "ブログ画像"} width={500} height={300} />
@@ -49,7 +51,7 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
                     <div className="mt-2 md:mt-6">
                         <div className="flex flex-col items-start">
                             <span className="text-xs text-gray-400">{content.date}</span>
-                            <div className="flex flex-wrap gap-1 md:gap-3 mt-1">
+                            <div className="flex flex-wrap gap-1 mt-1 md:gap-3">
                                 {createCategoryTag({ categoryArray: content.categoryArray })}
                             </div>
                         </div>

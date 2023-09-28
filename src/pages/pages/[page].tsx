@@ -1,97 +1,84 @@
-// [page].tsx
-
-import React from 'react';
-import { useRouter } from 'next/router';
-import Header from '../../components/Header';
+import Layout from '../../components/Layout';
+import fetchAPI from '../api/fetchAPI';
 import BlogArchive from '../../components/BlogArchive';
-import Pagination from '../../components/Pagination';
-import { Post } from '../../types/types';
-import fetchAPI from '../api/wp';
+// import Pagination from '../../components/Pagination';
+import { GET_POSTS_BY_CURSOR_QUERY } from '../../graphql/GraphQLQueries';
 
-console.log("hoge");
+const PAGE_SIZE = 100;
 
+function Page({ currentPage, totalPages, posts, pageInfo }) {
 
-const PAGE_SIZE = 10; // 1ページあたりの表示件数
+  // console.log("postspostspostsposts",posts);
+  
+  // ページネーションのクリック時に呼ばれる関数
+  const handlePageChange = (currentPage) => {
+    // 新しいページに対応する記事の範囲を計算
+    const newStartIndex = (currentPage - 1) * PAGE_SIZE;
+    const newEndIndex = newStartIndex + PAGE_SIZE - 1;
 
-import { useEffect, useState } from 'react';
+    // 新しい範囲内の記事データを表示
+    const newPosts = posts.slice(newStartIndex, newEndIndex + 1);
 
-function Page({ posts, currentPage, totalPages, pageInfo }) {
-  const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
-
-  const handlePageChange = (newPage) => {
-    router.push(`/pages/${newPage}`);
+    // ページ情報と記事データを更新
+    setCurrentPage(currentPage);
+    setDisplayedPosts(newPosts);
   };
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
-    <main>
-      <Header />
-      <BlogArchive posts={isMounted ? posts : []} />
-      {totalPages > 1 && pageInfo && (
-        <Pagination
-          currentPage={currentPage}
-          hasNextPage={pageInfo.hasNextPage}
-          hasPreviousPage={pageInfo.hasPreviousPage}
-          onPageChange={handlePageChange}
-        />
-      )}
-    </main>
+    <Layout>
+      <BlogArchive posts={posts} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        hasPreviousPage={pageInfo.hasPreviousPage}
+        onPageChange={handlePageChange}
+      />
+    </Layout>
   );
 }
 
+export default Page;
 
-Page.defaultProps = {
-  posts: [],
-  currentPage: 1,
-  totalPages: 1,
-  pageInfo: null,
-};
-
+// getServerSideProps 関数の修正
 export async function getServerSideProps(context) {
-  try {
-    const { params } = context;
-    const pageNumber = parseInt(params.pageNumber, 10);
-    const first = PAGE_SIZE;
-    const after = (pageNumber - 1) * PAGE_SIZE;
+  const { query } = context;
+  console.log("hogehoge",context);
+  const endCursor = query.endCursor
 
-    const query = `
-      // クエリの定義
-    `;
+  console.log("endCursorendCursorendCursorendCursor",endCursor);
+  
+  
+  const pageNumber = parseInt(query.page, 10);
+  console.log("hogePageNumber",pageNumber);
+  
 
-    const variables = {
-      first: first,
-      after: after,
-    };
+  const variables = {
+    first: PAGE_SIZE,
+    after: null, // 初回のクエリなので after は null
+  };
 
-    const response = await fetchAPI(query, variables);
-    const postsData = response.data.posts.nodes;
-    const pageInfo = response.data.posts.pageInfo;
+  const response = await fetchAPI(GET_POSTS_BY_CURSOR_QUERY, variables);
 
-    return {
-      props: {
-        posts: postsData,
-        currentPage: pageNumber,
-        totalPages: Math.ceil(postsData.length / PAGE_SIZE),
-        pageInfo,
-      },
-    };
-  } catch (err) {
-    console.error(err);
+  if (response.errors) {
+    console.error("GraphQLエラー:", response.errors);
     return {
       props: {
         posts: [],
-        currentPage: 1, // デフォルト値を設定
+        currentPage: 1,
         totalPages: 0,
-        pageInfo: null,
       },
     };
   }
+
+  const postsData = response.data.posts.edges;
+  const pageInfo = response.data.posts.pageInfo;
+
+  return {
+    props: {
+      posts: postsData,
+      currentPage: pageNumber,
+      pageInfo: pageInfo,
+      totalPages: Math.ceil(pageInfo.endCursor / PAGE_SIZE),
+    },
+  };
 }
-
-
-
-export default Page;
