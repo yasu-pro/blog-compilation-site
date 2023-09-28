@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_POSTS_BY_CURSOR_QUERY = `
-  query GetPostsByCursor($first: Int, $cursor: String) {
-    posts(first: $first, after: $cursor) {
+  query GetAllPosts($first: Int, $after: String) {
+    posts(first: $first, after: $after) {
       pageInfo {
         hasNextPage
         hasPreviousPage

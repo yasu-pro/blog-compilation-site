@@ -1,67 +1,35 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/router';
-import BlogArchive from '../../components/BlogArchive';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
-import { Post } from '../../types/types';
 import fetchAPI from '../api/fetchAPI';
-import { GET_POSTS_BY_CURSOR_QUERY } from '../../graphql/GraphQLQueries'; // 新しいimport
+import BlogArchive from '../../components/BlogArchive';
+// import Pagination from '../../components/Pagination';
+import { GET_POSTS_BY_CURSOR_QUERY } from '../../graphql/GraphQLQueries';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 100;
 
-function Page({ currentPage, totalPages, pageInfo, posts, endCursor }) {
-  const [loadedPosts, setLoadedPosts] = useState(posts);
-  const [loadedPageInfo, setLoadedPageInfo] = useState(pageInfo);
-  const router = useRouter();
+function Page({ currentPage, totalPages, posts, pageInfo }) {
 
-  console.log("pageInfopageInfopageInfopageInfopageInfo",pageInfo);
+  // console.log("postspostspostsposts",posts);
   
+  // ページネーションのクリック時に呼ばれる関数
+  const handlePageChange = (currentPage) => {
+    // 新しいページに対応する記事の範囲を計算
+    const newStartIndex = (currentPage - 1) * PAGE_SIZE;
+    const newEndIndex = newStartIndex + PAGE_SIZE - 1;
 
-  const handlePageChange = async (newPage) => {
-    console.log("handlePageChange 関数が呼び出されました");
-    console.log("newPage:", newPage);
-    
-    try {
-      const cursor = (newPage - 1) * PAGE_SIZE;
+    // 新しい範囲内の記事データを表示
+    const newPosts = posts.slice(newStartIndex, newEndIndex + 1);
 
-      const variables = {
-        first: PAGE_SIZE,
-        cursor: pageInfo.endCursor,
-      };
-
-      const response = await fetchAPI(GET_POSTS_BY_CURSOR_QUERY, variables);
-      
-      if (response.errors) {
-        console.error("GraphQLエラー:", response.errors);
-        return;
-      }
-
-
-      const newPostsData = response.data.posts.edges;
-      const newPageInfo = response.data.posts.pageInfo;
-
-     
-
-      console.log("新しい記事データ:", newPostsData);
-
-
-      // 新しいデータを既存のデータに追加
-      setLoadedPosts(newPostsData);
-      setLoadedPageInfo(newPageInfo)
-
-      // ページネーションのクリック時にURLを更新
-      router.push(`/pages/${newPage}`);
-    } catch (err) {
-      console.error("エラーが発生しました:", err);
-    }
+    // ページ情報と記事データを更新
+    setCurrentPage(currentPage);
+    setDisplayedPosts(newPosts);
   };
 
   return (
     <Layout>
-      <BlogArchive posts={loadedPosts} />
+      <BlogArchive posts={posts} />
       <Pagination
         currentPage={currentPage}
-        hasNextPage={pageInfo.hasNextPage}
+        totalPages={totalPages}
         hasPreviousPage={pageInfo.hasPreviousPage}
         onPageChange={handlePageChange}
       />
@@ -71,53 +39,46 @@ function Page({ currentPage, totalPages, pageInfo, posts, endCursor }) {
 
 export default Page;
 
+// getServerSideProps 関数の修正
 export async function getServerSideProps(context) {
+  const { query } = context;
+  console.log("hogehoge",context);
+  const endCursor = query.endCursor
 
-  try {
-    const { params, query } = context;
-    console.log("contextcontextcontextcontext", context);
-    
-    const pageNumber = parseInt(query.pageNumber, 10) || 1;
-    const first = PAGE_SIZE;
-    const cursor = query.endCursor;
+  console.log("endCursorendCursorendCursorendCursor",endCursor);
+  
+  
+  const pageNumber = parseInt(query.page, 10);
+  console.log("hogePageNumber",pageNumber);
+  
 
-    const variables = {
-      first: first,
-      cursor: null,
-    };
+  const variables = {
+    first: PAGE_SIZE,
+    after: null, // 初回のクエリなので after は null
+  };
 
-    const response = await fetchAPI(GET_POSTS_BY_CURSOR_QUERY, variables);
+  const response = await fetchAPI(GET_POSTS_BY_CURSOR_QUERY, variables);
 
-    console.log("responseresponseresponseresponse",response);
-    
-
-    if (response.errors) {
-      console.error("GraphQLエラー:", response.errors);
-    }
-
-    const postsData = response.data.posts.edges;
-    const pageInfo = response.data.posts.pageInfo;
-
-    return {
-      props: {
-        posts: postsData,
-        currentPage: pageNumber,
-        totalPages: Math.ceil(pageInfo.endCursor / PAGE_SIZE),
-        pageInfo,
-        cursor: cursor,
-      },
-    };
-  } catch (err) {
-    console.error("エラーが発生しました:", err);
-
+  if (response.errors) {
+    console.error("GraphQLエラー:", response.errors);
     return {
       props: {
         posts: [],
         currentPage: 1,
         totalPages: 0,
-        pageInfo: null,
-        cursor: null,
       },
     };
   }
+
+  const postsData = response.data.posts.edges;
+  const pageInfo = response.data.posts.pageInfo;
+
+  return {
+    props: {
+      posts: postsData,
+      currentPage: pageNumber,
+      pageInfo: pageInfo,
+      totalPages: Math.ceil(pageInfo.endCursor / PAGE_SIZE),
+    },
+  };
 }

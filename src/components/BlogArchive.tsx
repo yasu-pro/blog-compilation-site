@@ -3,9 +3,10 @@ import type { Posts } from "../types/types";
 import BlogItem from "./BlogItem";
 
 
+
 const BlogArchive: React.FC<Posts> = ({ posts }) => {
 
-    // console.log({posts});
+    // console.log("BlogArchiveBlogArchive",posts);
     
 
     return (

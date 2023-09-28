@@ -1,6 +1,6 @@
 const fetchAPI = async (query: string, variables: object): Promise<object> => {
-    const API_URL = "/api/proxy?url=https://blog-yasu.com/graphql";
-    const headers = { 'Content-Type': 'application/json' };
+    const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL
+    const headers = { 'Content-Type': 'application/json' }
 
     try {
         const response = await fetch(API_URL, {

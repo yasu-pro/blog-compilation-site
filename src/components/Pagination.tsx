@@ -1,59 +1,71 @@
 import React from 'react';
-import Link from 'next/link';
 
-const Pagination = ({ currentPage, hasNextPage, hasPreviousPage, onPageChange }) => {
-  const previousPage = currentPage > 1 ? currentPage - 1 : null;
-  const nextPage = hasNextPage ? currentPage + 1 : null;
+const Pagination = ({ onPageChange, totalPage, pageSize, currentPage }) => {
+  const pageButtons = [];
+
+  // pageNation何個表示するか
+  const maxPageNation = Math.ceil(totalPage / pageSize);
+
+  // ページネーションの中心位置
+  const centerPage = 5;
+
+  // ページネーションの数字を表示する関数
+  const renderPageButtons = (start, end) => {
+    for (let i = start; i <= end; i++) {
+      const isCurrentPage = i === currentPage;
+      pageButtons.push(
+        <span
+          key={i}
+          className={`px-4 py-2 border hover:bg-black hover:text-white ${isCurrentPage ? 'bg-black text-white' : ''}`}
+          onClick={() => onPageChange(i)}
+        >
+          {i}
+        </span>
+      );
+    }
+  };
+
+  if (maxPageNation <= centerPage) {
+    // ページネーションが中心位置より少ない場合
+    renderPageButtons(1, maxPageNation);
+  } else if (currentPage < centerPage) {
+    // centerPageより前のページの場合
+    renderPageButtons(1, centerPage);
+    pageButtons.push(
+      <span key="ellipsis-end" className={`px-4 py-2 border`}>
+        ...
+      </span>
+    );
+    renderPageButtons(maxPageNation, maxPageNation);
+  } else if (currentPage > maxPageNation - centerPage + 1) {//13
+    // centerPageより後のページの場合
+    renderPageButtons(1, 1);
+    pageButtons.push(
+      <span key="ellipsis-start" className={`px-4 py-2 border`}>
+        ...
+      </span>
+    );
+    renderPageButtons(maxPageNation - centerPage + 1, maxPageNation);
+  } else {
+    // centerPageを中心としたページの場合
+    renderPageButtons(1, 1);
+    pageButtons.push(
+      <span key="ellipsis-start" className={`px-4 py-2 border`}>
+        ...
+      </span>
+    );
+    renderPageButtons(currentPage - 2, currentPage + 2);
+    pageButtons.push(
+      <span key="ellipsis-end" className={`px-4 py-2 border`}>
+        ...
+      </span>
+    );
+    renderPageButtons(maxPageNation, maxPageNation);
+  }
 
   return (
-    <div className="flex items-center mt-8 space-x-1">
-      {hasPreviousPage && (
-        <Link
-          className="px-4 py-2 border hover:bg-black hover:text-white"
-          href={previousPage ? `/pages/${previousPage}` : ''}
-        >
-          前へ
-        </Link>
-      )}
-
-      <Link
-        className={`px-4 py-2 border hover:bg-black hover:text-white ${
-          currentPage === 1 ? 'bg-black text-white' : ''
-        }`}
-        href={currentPage === 1 ? '/' : `/pages/${currentPage}`}
-        onClick={() => onPageChange(1)}
-      >
-        1
-      </Link>
-
-      {currentPage > 5 && <span className="px-4 py-2">...</span>}
-
-      {Array.from({ length: hasNextPage ? currentPage + 5 : currentPage + 4 }, (_, i) => i + 2).map(
-        (page) => (
-          <Link
-            className={`px-4 py-2 border hover:bg-black hover:text-white ${
-              currentPage === page ? 'bg-black text-white' : ''
-            }`}
-            href={page === 1 ? '/' : `/pages/${page}`}
-            onClick={() => onPageChange(page)}
-            key={page}
-          >
-            {page}
-          </Link>
-        )
-      )}
-
-      {currentPage + 5 < hasNextPage && <span className="px-4 py-2">...</span>}
-
-      <Link
-        className={`px-4 py-2 border hover:bg-black hover:text-white ${
-          currentPage === hasNextPage ? 'bg-black text-white' : ''
-        }`}
-        href={nextPage ? `/pages/${nextPage}` : ''}
-        onClick={() => onPageChange(nextPage)}
-      >
-        {hasNextPage ? '次へ' : currentPage}
-      </Link>
+    <div className="flex items-center justify-center mt-8 space-x-1">
+      {pageButtons}
     </div>
   );
 };
