@@ -55,7 +55,6 @@ const Home = () => {
     setChangePosts(newPosts);
   }
 
-
   const handlePageChange = (newPage) => {
     console.log(newPage);
     setCurrentPage(newPage);
@@ -74,7 +73,7 @@ const Home = () => {
           />
         </>
       ):(
-        <p>Loading...</p>
+        <p className="flex justify-center items-center h-screen">Loading...</p>
       )}
     </Layout>
   );
