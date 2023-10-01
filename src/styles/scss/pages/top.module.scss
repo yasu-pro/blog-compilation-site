@@ -4,7 +4,7 @@
     @include wrapper($baseWidth: $baseWidthSp);
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
 
     @include lg {
         flex-direction: row;
