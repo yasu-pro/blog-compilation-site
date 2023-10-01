@@ -2,6 +2,7 @@ import React from "react";
 import Image from 'next/image';
 import { format } from "date-fns";
 import { Post } from "../types/types";
+import Styles from "../styles/scss/components/BlogItem.module.scss"
 
 const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
 
@@ -10,7 +11,7 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
             categoryArray
                 .filter((categoryData) => categoryData !== null)
                 .map((categoryData, index) => (
-                    <span className="text-xs md:text-sm font-semibold p-1 md:py-1 md:px-1.5 text-gray-500 bg-gray-200 rounded-md" key={index}>{categoryData}</span>
+                    <span className={Styles.contents__category_name} key={index}>{categoryData}</span>
             ))
         )
     }
@@ -40,22 +41,22 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
     }
 
     return (
-        <article className="h-full">
-            <a href={content.postUrl} target="_blank" className="block h-full p-1 transition transform rounded-md md:p-4 hover:scale-105 hover:bg-gray-200">
-                <div className="flex flex-col">
-                    <div className="w-full h-240">
-                        <Image className="object-cover w-full h-full rounded-lg" src={content.eyecatch.url ?? "/images/noImage.jpg"} alt={content.eyecatch.alt?? "ブログ画像"} width={500} height={300} />
+        <article className={Styles.blogItem}>
+            <a href={content.postUrl} target="_blank" className={Styles.blogItemLink}>
+                <div className={Styles.blogItem__inner}>
+                    <div className={Styles.blogItem__imgArea}>
+                        <Image className={Styles.blogItem__imgArea_img} src={content.eyecatch.url ?? "/images/noImage.jpg"} alt={content.eyecatch.alt?? "ブログ画像"} width={500} height={300} />
                     </div>
-                    <div className="mt-2 md:mt-6">
-                        <div className="flex flex-col items-start">
-                            <span className="text-xs text-gray-400">{content.date}</span>
-                            <div className="flex flex-wrap gap-1 mt-1 md:gap-3">
+                    <div className={Styles.blogItem__contents}>
+                        <div className={Styles.contents__inner}>
+                            <span className={Styles.contents_date}>{content.date}</span>
+                            <div className={Styles.contents__category}>
                                 {createCategoryTag({ categoryArray: content.categoryArray })}
                             </div>
                         </div>
-                        <div className="flex flex-col mt-1 md:mt-3">
-                            <h2 className="text-base md:text-2xl font-semibold md:font-extrabold text-gray-900 md:leading-1.5 overflow-hidden line-clamp-2">{content.title}</h2>
-                            <div className="mt-1 md:mt-2 leading-1.5 text-gray-500 text-xs md:text-base overflow-hidden line-clamp-4" dangerouslySetInnerHTML={{ __html: content.content }}></div>
+                        <div className={Styles.contents__para}>
+                            <h2 className={Styles.contents__para_title}>{content.title}</h2>
+                            <div className={Styles.contents__para_description} dangerouslySetInnerHTML={{ __html: content.content }}></div>
                         </div>
                     </div>
                 </div>

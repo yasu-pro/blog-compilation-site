@@ -1,0 +1,16 @@
+@import '../main.scss';
+
+.pageTitle{
+    margin-top: 32px;
+    @include md {
+        margin-top: 48px;
+    }
+    .title {
+        @include f-size(24);
+        font-weight: bold;
+        text-align: center;
+        @include md {
+            @include f-size(30);
+        }
+    }
+}
