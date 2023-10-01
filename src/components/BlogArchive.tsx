@@ -6,9 +6,6 @@ import BlogItem from "./BlogItem";
 
 const BlogArchive: React.FC<Posts> = ({ posts }) => {
 
-    // console.log("BlogArchiveBlogArchive",posts);
-    
-
     return (
         <div className="px-2 mt-5 md:mt-10 md:pr-8">
             <div className="grid justify-center grid-cols-2 gap-1 lg:grid-cols-3 md:gap-8">
