@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import Image from 'next/image';
 import Layout from '../components/Layout';
 import BlogArchive from '../components/BlogArchive';
 import { Post } from '../types/types';
@@ -19,33 +20,29 @@ const Home = () => {
   const first = 100;
   const PAGE_SIZE = 5;
 
-  const fetchData = async () => {
-    const query = GET_POSTS_BY_CURSOR_QUERY;
-
-    const variables = {
-      first: first,
-      after: null,
-    };
-
-    try {
-      const response = await fetchAPI(query, variables);
-      const postsNodesData = response.data.posts.edges;
-
-      setPosts(postsNodesData);
-      setPageInfo(response.data.posts.pageInfo);
-    } catch (err) {
-      setError('データの取得に失敗しました');
-      console.log('データの取得エラー:', err);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      const query = GET_POSTS_BY_CURSOR_QUERY;
+      const variables = {
+        first: first,
+        after: null,
+      };
+  
+      try {
+        const response = await fetchAPI(query, variables);
+        const postsNodesData = response.data.posts.edges;
+  
+        setPosts(postsNodesData);
+        setPageInfo(response.data.posts.pageInfo);
+      } catch (err) {
+        setError('データの取得に失敗しました');
+        console.log('データの取得エラー:', err);
+      }
+    };
+  
     fetchData();
-  }, [posts,currentPage,pageInfo]);
-
-  useEffect(()=>{
-    changePostsData(currentPage)
-  },[currentPage, posts])
+    changePostsData(currentPage);
+  }, [posts, currentPage, pageInfo]);
 
   const totalPage: number = posts.length
 
@@ -78,7 +75,7 @@ const Home = () => {
         </>
       ):(
         <p className={Styles.loading}>
-          <img src="/images/loading-circle.gif" alt="loading..." />
+          <Image src="/images/loading-circle.gif" alt="loading..." width={150} height={150}/>
         </p>
       )}
     </Layout>
