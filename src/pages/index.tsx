@@ -30,7 +30,6 @@ const Home = () => {
     try {
       const response = await fetchAPI(query, variables);
       const postsNodesData = response.data.posts.edges;
-      console.log(response);
 
       setPosts(postsNodesData);
       setPageInfo(response.data.posts.pageInfo);

@@ -5,7 +5,6 @@ import { Post } from "../types/types";
 import Styles from "../styles/scss/components/BlogItem.module.scss"
 
 const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
-
     const createCategoryTag: React.FC<{ categoryArray: (string | null)[] }> = ({ categoryArray }) => {
         return (
             categoryArray
@@ -19,10 +18,8 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
     const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL as string;
 
     let categoryArray: string[] = [];
-    if (Array.isArray(post.categories)) {
-        categoryArray = post.categories.flatMap(categoryData => {
-            return categoryData?.nodes?.map(category => category?.name) || [];
-        });
+    if (Array.isArray(post.categories.nodes)) {
+        categoryArray = post.categories.nodes.map(category => category.name);
     }
 
     const content = {
@@ -37,7 +34,6 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
             height: 320,
             width: 560,
         }
-
     }
 
     return (

@@ -59,19 +59,19 @@
             }
 
             &_name {
-                padding: 4px;
-                @include f-size(12);
+                padding: 3px;
+                @include f-size(10);
                 font-weight: 600;
+                color: rgb(107 114 128);
+                background-color: rgb(229 231 235);
+                border-radius: 3px;
 
                 @include md {
-                    padding-top: 4px;
-                    padding-bottom: 4px;
+                    padding-top: 3px;
+                    padding-bottom: 3px;
                     padding-left: 6px;
                     padding-right: 6px;
-                    @include f-size(14);
-                    color: rgb(107 114 128);
-                    background-color: rgb(229 231 235);
-                    border-radius: 6px;
+                    @include f-size(11);
                 }
             }
         }
@@ -108,7 +108,7 @@
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
-                -webkit-line-clamp: 4;
+                -webkit-line-clamp: 3;
             }
         }
     }
