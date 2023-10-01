@@ -4,7 +4,10 @@ import BlogArchive from '../components/BlogArchive';
 import { Post } from '../types/types';
 import fetchAPI from './api/fetchAPI';
 import Pagination from '../components/Pagination';
+import SortComponent from '../components/SortComponent';
 import { GET_POSTS_BY_CURSOR_QUERY } from '../graphql/GraphQLQueries'
+import Styles from "../styles/scss/pages/top.module.scss"
+
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -63,16 +66,21 @@ const Home = () => {
     <Layout>
       {pageInfo ? (
         <>
-          <BlogArchive posts={changePosts} />
-          <Pagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            totalPage={totalPage}
-            pageSize={PAGE_SIZE}
-          />
+          <div className={Styles.mainContens}>
+            <BlogArchive posts={changePosts} />
+            <SortComponent />
+          </div>
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              totalPage={totalPage}
+              pageSize={PAGE_SIZE}
+            />
         </>
       ):(
-        <p className="flex justify-center items-center h-screen">Loading...</p>
+        <p className={Styles.loading}>
+          <img src="/images/loading-circle.gif" alt="loading..." />
+        </p>
       )}
     </Layout>
   );

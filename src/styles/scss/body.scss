@@ -1,0 +1,16 @@
+.pageContainer {
+  font-size: 62.5%;
+  color: $textColor;
+  @include f-size($baseFontPx);
+  line-height: $lineHeight;
+  &.hidden {
+    overflow: hidden;
+  }
+  a {
+    color: $textColor;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}

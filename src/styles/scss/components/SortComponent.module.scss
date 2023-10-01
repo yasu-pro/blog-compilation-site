@@ -1,0 +1,127 @@
+@import '../main.scss';
+
+.sort {
+    width: 100%;
+    margin-top: 40px;
+    border: 1px solid rgb(156, 163, 175);
+    padding: 15px;
+    border-radius: 5px;
+
+    @include lg {
+        padding-top: 18px;
+        padding-bottom: 18px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    &__head {
+        text-align: center;
+        font-weight: bold;
+        @include f-size(16);
+    }
+
+    &__order {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+
+        div {
+            display: flex;
+            gap: 5px;
+        }
+
+        &_label {
+            font-weight: bold;
+        }
+    }
+
+
+    &__category {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+
+        @include md {
+            margin-top: 5px;
+        }
+
+        &_name {
+            font-weight: bold;
+        }
+
+        select {
+            margin-top: 7px;
+            text-align: center;
+            border: 1px solid rgb(156, 163, 175);
+            border-radius: 5px;
+            padding: 5px;
+
+            @include md {
+                margin-top: 3px;
+                padding: 3px;
+            }
+        }
+    }
+
+    &__keyword {
+        margin-top: 10px;
+        @include md {
+            margin-top: 5px;
+        }
+        &_label {
+            font-weight: bold;
+            display: block;
+        }
+
+        div {
+            margin-top: 7px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+
+            @include md {
+                margin-top: 3px;
+            }
+        }
+
+        &_input {
+            width: 80%;
+            border: 1px solid rgb(156, 163, 175);
+            border-radius: 5px;
+            padding: 5px;
+            width: 100%;
+
+            @include md {
+                padding: 3px;
+            }
+        }
+
+        &_button {
+            background-color: #fff;
+            color: #0074e4;
+            border: 1px solid rgb(156, 163, 175);
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 65px;
+            margin-top: 10px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-right: 7px;
+            padding-left: 7px;
+            margin-left: auto;
+
+            @include md {
+                width: 30%;
+            }
+
+            &:hover {
+                background-color: #0074e4;
+                color: #fff;
+                border: 1px solid #0074e4;
+            }
+        }
+
+    }
+}
