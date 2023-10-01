@@ -31,7 +31,6 @@ const Home = () => {
 
       setPosts(postsNodesData);
       setPageInfo(response.data.posts.pageInfo);
-      setEndCursor(response.data.posts.pageInfo.endCursor)
     } catch (err) {
       setError('データの取得に失敗しました');
       console.log('データの取得エラー:', err);

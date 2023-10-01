@@ -5,8 +5,6 @@ import { Post } from "../types/types";
 
 const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
 
-    // console.log("postpostpostpostpost",post);
-
     const createCategoryTag: React.FC<{ categoryArray: (string | null)[] }> = ({ categoryArray }) => {
         return (
             categoryArray
