@@ -41,7 +41,14 @@ const BlogItem: React.FC<{ post: Post }> = ({ post }) => {
             <a href={content.postUrl} target="_blank" className={Styles.blogItemLink}>
                 <div className={Styles.blogItem__inner}>
                     <div className={Styles.blogItem__imgArea}>
-                        <Image className={Styles.blogItem__imgArea_img} src={content.eyecatch.url ?? "/images/noImage.jpg"} alt={content.eyecatch.alt?? "ブログ画像"} width={500} height={300} />
+                        <Image
+                            className={Styles.blogItem__imgArea_img}
+                            src={content.eyecatch.url ?? "/images/noImage.jpg"}
+                            alt={content.eyecatch.alt?? "ブログ画像"}
+                            width={500}
+                            height={300}
+                            style={{ width: '500px', height: '300px' }}
+                        />
                     </div>
                     <div className={Styles.blogItem__contents}>
                         <div className={Styles.contents__inner}>
