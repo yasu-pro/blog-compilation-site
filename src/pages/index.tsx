@@ -16,6 +16,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalNumberOfArticles, setTotalNumberOfArticles] = useState<number>(0);
   const [sortOption, setSortOption] = useState('des');
+  const [loading, setLoading] = useState(true);
 
   const first = 100;
   const PAGE_SIZE = 5;
@@ -45,6 +46,8 @@ const Home = () => {
     } catch (err) {
       setError('データの取得に失敗しました');
       console.log('データの取得エラー:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,32 +83,32 @@ const Home = () => {
 
   return (
     <Layout>
-      {postsData ? (
-        <>
-          <div className={Styles.mainContens}>
-            <BlogArchive posts={changePosts} />
-            <SortComponent
-              sortOption={sortOption}
-              onSortChange={handleSortPosts}
-            />
-          </div>
-          <Pagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            totalPage={totalNumberOfArticles}
-            pageSize={PAGE_SIZE}
-          />
-        </>
-      ) : (
+      {loading ? (
         <p className={Styles.loading}>
-          <Image
-            src="/images/loading-circle.gif"
-            alt="loading..."
-            width={150}
-            height={150}
-            style={{ width: '150', height: '150' }}
+        <Image
+          src="/images/loading-circle.gif"
+          alt="loading..."
+          width={150}
+          height={150}
+          style={{ width: '150', height: '150' }}
+        />
+      </p>
+      ) : (
+        <>
+        <div className={Styles.mainContens}>
+          <BlogArchive posts={changePosts} />
+          <SortComponent
+            sortOption={sortOption}
+            onSortChange={handleSortPosts}
           />
-        </p>
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          totalPage={totalNumberOfArticles}
+          pageSize={PAGE_SIZE}
+        />
+      </>
       )}
     </Layout>
   );
