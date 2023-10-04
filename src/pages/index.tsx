@@ -82,7 +82,7 @@ const Home = () => {
     setCurrentPage(newPage);
   };
 
-  const handleSortPosts = (newSortOption) => {
+  const handleSortOrderPosts = (newSortOption) => {
     setSortOption(newSortOption);
   };
 
@@ -109,7 +109,7 @@ const Home = () => {
           <SortComponent
             allPosts={postsData}
             sortOption={sortOption}
-            onSortOrderChange={handleSortPosts}
+            onSortOrderChange={handleSortOrderPosts}
             onCategoryChange={handleCategoryChange}
           />
         </div>

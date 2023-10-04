@@ -8,7 +8,7 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
         onSortOrderChange(sortOption);
     };
 
-    const handleCategoryChange = (categoryName) => {
+    const handleCategoryOrder = (categoryName) => {
         onCategoryChange(categoryName);
     }
 
@@ -42,7 +42,7 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
             <p className={Styles.sort__head}>記事検索</p>
             <div className={Styles.sort__category}>
                 <label className={Styles.sort__category_name} htmlFor="categories">カテゴリー検索 :</label>
-                <select id="categories" name="category" onChange={(event) => handleCategoryChange(event.target.value)}>
+                <select id="categories" name="category" onChange={(event) => handleCategoryOrder(event.target.value)}>
                     <option key="all" value="all">全て</option>
                     {createCategoryOptionTag(categoryExtraction())}
                 </select>
