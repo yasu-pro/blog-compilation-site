@@ -3,16 +3,51 @@ import { Post } from '../types/types';
 import Styles from "../styles/scss/components/SortComponent.module.scss"
 
 
-const SortComponent = ({ sortOption, onSortChange }) => {
-    const handleSortChange = (sortOption) => {
-        // ソートオプションを親コンポーネントに伝える
-        onSortChange(sortOption);
+const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChange }) => {
+    const handleSortOrder = (sortOption) => {
+        onSortOrderChange(sortOption);
     };
 
+    const handleCategoryChange = (categoryName) => {
+        onCategoryChange(categoryName);
+    }
+
+    const categoryExtraction = () => {
+        const categoryArray = allPosts.map((post, index) => (
+            post.node.categories.nodes.map(category => {
+                return category.name
+            })
+        ))
+        const flatCategoryArray = categoryArray.flat();
+        const uniqueCategories = [...new Set(flatCategoryArray)];
+
+        return uniqueCategories
+    }
+
+    const createCategoryOptionTag = (uniqueCategoryArray) => {
+        return (
+            uniqueCategoryArray.map(category => (
+                <option
+                    key={category}
+                    value={category}
+                >
+                    {category}
+                </option>
+            ))
+        );
+    }
 
     return (
         <div className={Styles.sort}>
             <p className={Styles.sort__head}>記事検索</p>
+            <div className={Styles.sort__category}>
+                <label className={Styles.sort__category_name} htmlFor="categories">カテゴリー検索 :</label>
+                <select id="categories" name="category" onChange={(event) => handleCategoryChange(event.target.value)}>
+                    <option key="all" value="all">全て</option>
+                    {createCategoryOptionTag(categoryExtraction())}
+                </select>
+            </div>
+
             <div className={Styles.sort__order}>
                 <div>
                     <input className={Styles.sort__order_input}
@@ -21,7 +56,7 @@ const SortComponent = ({ sortOption, onSortChange }) => {
                         name="sortOrder"
                         value="asc"
                         checked={sortOption === "asc"}
-                        onChange={(event) => handleSortChange(event.target.value)}
+                        onChange={(event) => handleSortOrder(event.target.value)}
                     />
                     <label className={Styles.sort__order_label} htmlFor="asc">昇順</label>
                 </div>
@@ -33,19 +68,10 @@ const SortComponent = ({ sortOption, onSortChange }) => {
                         name="sortOrder"
                         value="des"
                         checked={sortOption === "des"}
-                        onChange={(event) => handleSortChange(event.target.value)}
+                        onChange={(event) => handleSortOrder(event.target.value)}
                     />
                     <label className={Styles.sort__order_label} htmlFor="des">降順</label>
                 </div>
-            </div>
-            <div className={Styles.sort__category}>
-                <label className={Styles.sort__category_name} htmlFor="categories">カテゴリー検索 :</label>
-                <select id="categories" name="category">
-                    <option value="javaScript">javaScript</option>
-                    <option value="php">PHP</option>
-                    <option value="react">React</option>
-                    <option value="redux">Redux</option>
-                </select>
             </div>
 
             <div className={Styles.sort__keyword}>
