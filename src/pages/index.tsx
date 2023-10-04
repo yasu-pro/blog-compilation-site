@@ -16,6 +16,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalNumberOfArticles, setTotalNumberOfArticles] = useState<number>(0);
   const [sortOption, setSortOption] = useState('des');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
 
   const first = 100;
@@ -26,8 +27,8 @@ const Home = () => {
   },[])
 
   useEffect(() => {
-    renderPostsData(currentPage);
-  }, [currentPage,postsData]);
+    renderPostsData(currentPage, selectedCategory);
+  }, [currentPage, selectedCategory, postsData, sortOption]);
 
   const fetchData = async () => {
     const query = GET_POSTS_BY_CURSOR_QUERY;
@@ -39,6 +40,7 @@ const Home = () => {
     try {
       const response = await fetchAPI(query, variables);
       setPostsData(response.data.posts.edges);
+      setChangePosts(response.data.posts.edges);
 
       if (response.data.posts.edges) {
         setTotalNumberOfArticles(response.data.posts.edges.length);
@@ -51,34 +53,41 @@ const Home = () => {
     }
   };
 
-  const renderPostsData = (page) => {
+  const renderPostsData = (page, category) => {
     const start = (page - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
-    const newPosts = postsData.slice(start, end);
+    let newPosts = [...postsData];
+
+    // カテゴリーが "all" 以外の場合、カテゴリーでフィルタリング
+    if (category !== 'all') {
+      newPosts = newPosts.filter((post) =>
+        post.node.categories.nodes.some((postCategory) => postCategory.name === category)
+      );
+    }
+
+    // ソート
+    if (sortOption === 'asc') {
+      newPosts.sort((a, b) => new Date(a.node.date) - new Date(b.node.date));
+    } else if (sortOption === 'des') {
+      newPosts.sort((a, b) => new Date(b.node.date) - new Date(a.node.date));
+    }
+
+    setTotalNumberOfArticles(newPosts.length)
+    newPosts = newPosts.slice(start, end);
     setChangePosts(newPosts);
   };
 
   const handlePageChange = (newPage) => {
+    renderPostsData(newPage, selectedCategory);
     setCurrentPage(newPage);
   };
 
+  const handleSortPosts = (newSortOption) => {
+    setSortOption(newSortOption);
+  };
 
-  const handleSortPosts = (sortOption) => {
-    let sortedPosts = [...postsData];
-
-    if (sortOption === 'asc') {
-      sortedPosts.sort((a, b) => new Date(a.node.date) - new Date(b.node.date));
-      setSortOption('asc');
-    } else if (sortOption === 'des') {
-      sortedPosts.sort((a, b) => new Date(b.node.date) - new Date(a.node.date));
-      setSortOption('des');
-    }
-
-    setPostsData(sortedPosts);
-
-    handlePageChange(1);
-
-    renderPostsData(1);
+  const handleCategoryChange = (newCategory) => {
+    setSelectedCategory(newCategory);
   };
 
   return (
@@ -98,14 +107,16 @@ const Home = () => {
         <div className={Styles.mainContens}>
           <BlogArchive posts={changePosts} />
           <SortComponent
+            allPosts={postsData}
             sortOption={sortOption}
-            onSortChange={handleSortPosts}
+            onSortOrderChange={handleSortPosts}
+            onCategoryChange={handleCategoryChange}
           />
         </div>
         <Pagination
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          totalPage={totalNumberOfArticles}
+          totalNumberOfArticles={totalNumberOfArticles}
           pageSize={PAGE_SIZE}
         />
       </>

@@ -1,10 +1,10 @@
 import React from 'react';
 
-const Pagination = ({ onPageChange, totalPage, pageSize, currentPage }) => {
+const Pagination = ({ onPageChange, totalNumberOfArticles, pageSize, currentPage }) => {
   const pageButtons = [];
 
   // pageNation何個表示するか
-  const maxPageNation = Math.ceil(totalPage / pageSize);
+  const maxPageNation = Math.ceil(totalNumberOfArticles / pageSize);
 
   // ページネーションの中心位置
   const centerPage = 5;
