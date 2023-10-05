@@ -30,8 +30,11 @@ const Home = () => {
 
   useEffect(() => {
     renderPostsData(currentPage, selectedCategory);
-  }, [currentPage, selectedCategory, sortOption, searchedKeyword, postsData]
-    );
+  }, [currentPage,
+      selectedCategory,
+      sortOption,
+      searchedKeyword,postsData
+    ]);
 
 
   const fetchData = async () => {
@@ -137,8 +140,8 @@ const Home = () => {
           {hasMatchedResults ? (
               <BlogArchive posts={changePosts} />
             ):(
-              <div>
-                <p>
+              <div className={Styles.noKeyword}>
+                <p className={Styles.noKeyword_text}>
                   対象の記事が見つかりませんでした。
                 </p>
               </div>
