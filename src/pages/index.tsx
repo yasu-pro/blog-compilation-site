@@ -17,6 +17,8 @@ const Home = () => {
   const [totalNumberOfArticles, setTotalNumberOfArticles] = useState<number>(0);
   const [sortOption, setSortOption] = useState('des');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchedKeyword, setSearchedKeyword] = useState('');
+  const [hasMatchedResults, setHasMatchedResults] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const first = 100;
@@ -28,7 +30,9 @@ const Home = () => {
 
   useEffect(() => {
     renderPostsData(currentPage, selectedCategory);
-  }, [currentPage, selectedCategory, postsData, sortOption]);
+  }, [currentPage, selectedCategory, sortOption, searchedKeyword, postsData]
+    );
+
 
   const fetchData = async () => {
     const query = GET_POSTS_BY_CURSOR_QUERY;
@@ -72,14 +76,31 @@ const Home = () => {
       newPosts.sort((a, b) => new Date(b.node.date) - new Date(a.node.date));
     }
 
-    setTotalNumberOfArticles(newPosts.length)
-    newPosts = newPosts.slice(start, end);
-    setChangePosts(newPosts);
+    if (searchedKeyword) {
+      newPosts = newPosts.filter((post) => {
+        const titleMatch: boolean = post.node.title.includes(searchedKeyword);
+        const contentMatch: boolean = post.node.content.includes(searchedKeyword);
+        const isMatched: boolean = titleMatch || contentMatch;
+
+        return isMatched;
+      });
+    }
+
+    if (!searchedKeyword || newPosts.length > 0) {
+      setHasMatchedResults(true);
+    } else {
+      setHasMatchedResults(false);
+    }
+
+    const filteredPosts = newPosts.slice(start, end);
+
+    setChangePosts(filteredPosts);
+    setTotalNumberOfArticles(newPosts.length);
   };
 
   const handlePageChange = (newPage) => {
-    renderPostsData(newPage, selectedCategory);
     setCurrentPage(newPage);
+    renderPostsData(newPage, selectedCategory);
   };
 
   const handleSortOrderPosts = (newSortOption) => {
@@ -88,7 +109,15 @@ const Home = () => {
 
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
+    setCurrentPage(1);
+    renderPostsData(1, newCategory);
   };
+
+  const handleKeywordOrder = (newKeyword) => {
+    setSearchedKeyword(newKeyword);
+    setCurrentPage(1);
+    renderPostsData(1, selectedCategory);
+  }
 
   return (
     <Layout>
@@ -105,12 +134,22 @@ const Home = () => {
       ) : (
         <>
         <div className={Styles.mainContens}>
-          <BlogArchive posts={changePosts} />
+          {hasMatchedResults ? (
+              <BlogArchive posts={changePosts} />
+            ):(
+              <div>
+                <p>
+                  対象の記事が見つかりませんでした。
+                </p>
+              </div>
+            )
+          }
           <SortComponent
             allPosts={postsData}
             sortOption={sortOption}
             onSortOrderChange={handleSortOrderPosts}
             onCategoryChange={handleCategoryChange}
+            onKeywordOrderChange={handleKeywordOrder}
           />
         </div>
         <Pagination

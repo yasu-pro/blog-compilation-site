@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { Posts } from "../types/types";
 import BlogItem from "./BlogItem";
 import Styles from "../styles/scss/components/BlogArchive.module.scss";
