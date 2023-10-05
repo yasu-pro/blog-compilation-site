@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Post } from '../types/types';
 import Styles from "../styles/scss/components/SortComponent.module.scss"
 
 
-const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChange }) => {
+const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChange, onKeywordOrderChange }) => {
+    const [keyword, setKeyword] = useState('');
     const handleSortOrder = (sortOption) => {
         onSortOrderChange(sortOption);
     };
 
-    const handleCategoryChange = (categoryName) => {
+    const handleCategoryOrder = (categoryName) => {
         onCategoryChange(categoryName);
+    }
+
+    const handleKeywordOrder = () => {
+        onKeywordOrderChange(keyword);
     }
 
     const categoryExtraction = () => {
@@ -42,7 +47,7 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
             <p className={Styles.sort__head}>記事検索</p>
             <div className={Styles.sort__category}>
                 <label className={Styles.sort__category_name} htmlFor="categories">カテゴリー検索 :</label>
-                <select id="categories" name="category" onChange={(event) => handleCategoryChange(event.target.value)}>
+                <select id="categories" name="category" onChange={(event) => handleCategoryOrder(event.target.value)}>
                     <option key="all" value="all">全て</option>
                     {createCategoryOptionTag(categoryExtraction())}
                 </select>
@@ -77,8 +82,20 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
             <div className={Styles.sort__keyword}>
                 <label className={Styles.sort__keyword_label} htmlFor="keyword">キーワード検索 :</label>
                 <div>
-                    <input className={Styles.sort__keyword_input} type="text" name="" id="keyword" />
-                    <button className={Styles.sort__keyword_button} type="submit">検索</button>
+                    <input
+                        className={Styles.sort__keyword_input}
+                        type="text"
+                        name="keyword"
+                        id="keyword"
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
+                    <button
+                        className={Styles.sort__keyword_button}
+                        type="submit"
+                        onClick={() => handleKeywordOrder()}
+                    >
+                        キーワード検索
+                    </button>
                 </div>
             </div>
         </div>
