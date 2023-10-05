@@ -8,6 +8,12 @@
     border-radius: 5px;
 
     @include lg {
+        position: sticky;
+        top: 60px;
+        margin-top: 0;
+    }
+
+    @include lg {
         padding-top: 18px;
         padding-bottom: 18px;
         padding-right: 15px;
@@ -20,30 +26,10 @@
         @include f-size(16);
     }
 
-    &__order {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-
-        div {
-            display: flex;
-            gap: 5px;
-        }
-
-        &_label {
-            font-weight: bold;
-        }
-    }
-
-
     &__category {
         display: flex;
         flex-direction: column;
         margin-top: 10px;
-
-        @include md {
-            margin-top: 5px;
-        }
 
         &_name {
             font-weight: bold;
@@ -55,11 +41,35 @@
             border: 1px solid rgb(156, 163, 175);
             border-radius: 5px;
             padding: 5px;
+            height: 33px;
 
             @include md {
                 margin-top: 3px;
                 padding: 3px;
             }
+
+            @include lg {
+                height: 31px;
+            }
+        }
+    }
+
+    &__order {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+
+        @include md {
+            margin-top: 5px;
+        }
+
+        div {
+            display: flex;
+            gap: 5px;
+        }
+
+        &_label {
+            font-weight: bold;
         }
     }
 
@@ -90,9 +100,14 @@
             border-radius: 5px;
             padding: 5px;
             width: 100%;
+            height: 33px;
 
             @include md {
                 padding: 3px;
+            }
+
+            @include lg {
+                height: 31px;
             }
         }
 
@@ -104,17 +119,13 @@
             transition: background-color 0.3s, color 0.3s;
             border-radius: 5px;
             width: 100%;
-            max-width: 65px;
+            max-width: 135px;
             margin-top: 10px;
             padding-top: 3px;
             padding-bottom: 3px;
             padding-right: 7px;
             padding-left: 7px;
             margin-left: auto;
-
-            @include md {
-                width: 30%;
-            }
 
             &:hover {
                 background-color: #0074e4;
