@@ -1,7 +1,8 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 
-const path = require('path'); 
+require('dotenv').config();
+const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
