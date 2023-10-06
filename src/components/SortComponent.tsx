@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import { Post } from '../types/types';
+import { Edge } from '../types/types';
 import Styles from "../styles/scss/components/SortComponent.module.scss"
 
+interface SortComponentProps {
+    sortOption: string;
+    onSortOrderChange: (sortOption: string) => void;
+    allPosts: Edge[];
+    onCategoryChange: (categoryName: string) => void;
+    onKeywordOrderChange: (keyword: string) => void;
+}
 
-const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChange, onKeywordOrderChange }) => {
+const SortComponent: React.FC<SortComponentProps> = ({
+    sortOption,
+    onSortOrderChange,
+    allPosts,
+    onCategoryChange,
+    onKeywordOrderChange
+}) => {
     const [keyword, setKeyword] = useState('');
-    const handleSortOrder = (sortOption) => {
+    const handleSortOrder = (sortOption: string) => {
         onSortOrderChange(sortOption);
     };
 
-    const handleCategoryOrder = (categoryName) => {
+    const handleCategoryOrder = (categoryName: string) => {
         onCategoryChange(categoryName);
     }
 
@@ -18,7 +31,7 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
     }
 
     const categoryExtraction = () => {
-        const categoryArray = allPosts.map((post, index) => (
+        const categoryArray = allPosts.map((post) => (
             post.node.categories.nodes.map(category => {
                 return category.name
             })
@@ -29,7 +42,7 @@ const SortComponent = ({ sortOption, onSortOrderChange, allPosts, onCategoryChan
         return uniqueCategories
     }
 
-    const createCategoryOptionTag = (uniqueCategoryArray) => {
+    const createCategoryOptionTag = (uniqueCategoryArray: string[]) => {
         return (
             uniqueCategoryArray.map(category => (
                 <option

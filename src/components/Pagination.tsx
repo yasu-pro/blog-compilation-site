@@ -1,6 +1,16 @@
 import React from 'react';
 
-const Pagination = ({ onPageChange, totalNumberOfArticles, pageSize, currentPage }) => {
+const Pagination = ({
+  onPageChange,
+  totalNumberOfArticles,
+  pageSize,
+  currentPage
+}: {
+  onPageChange: (page: number) => void;
+  totalNumberOfArticles: number;
+  pageSize: number;
+  currentPage: number;
+}) => {
   const pageButtons = [];
 
   // pageNation何個表示するか
@@ -10,7 +20,7 @@ const Pagination = ({ onPageChange, totalNumberOfArticles, pageSize, currentPage
   const centerPage = 5;
 
   // ページネーションの数字を表示する関数
-  const renderPageButtons = (start, end) => {
+  const renderPageButtons = (start: number, end: number) => {
     for (let i = start; i <= end; i++) {
       const isCurrentPage = i === currentPage;
       pageButtons.push(
