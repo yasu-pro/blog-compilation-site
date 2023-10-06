@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Layout from '../components/Layout';
 import BlogArchive from '../components/BlogArchive';
-import { Post } from '../types/types';
+import { Edge } from '../types/types';
 import fetchAPI from './api/fetchAPI';
 import Pagination from '../components/Pagination';
 import SortComponent from '../components/SortComponent';
@@ -10,8 +10,8 @@ import { GET_POSTS_BY_CURSOR_QUERY } from '../graphql/GraphQLQueries';
 import Styles from "../styles/scss/pages/top.module.scss";
 
 const Home = () => {
-  const [postsData, setPostsData] = useState<Post[]>([]);
-  const [changePosts, setChangePosts] = useState<Post[]>([]);
+  const [postsData, setPostsData] = useState<Edge[]>([]);
+  const [changePosts, setChangePosts] = useState<Edge[]>([]);
   const [error, setError] = useState<null | string>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalNumberOfArticles, setTotalNumberOfArticles] = useState<number>(0);
@@ -30,6 +30,7 @@ const Home = () => {
 
   useEffect(() => {
     renderPostsData(currentPage, selectedCategory);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage,
       selectedCategory,
       sortOption,
@@ -46,8 +47,9 @@ const Home = () => {
 
     try {
       const response = await fetchAPI(query, variables);
-      setPostsData(response.data.posts.edges);
-      setChangePosts(response.data.posts.edges);
+      const postDataEdges: Edge[] = response.data?.posts?.edges;
+      setPostsData(postDataEdges);
+      setChangePosts(postDataEdges)
 
       if (response.data.posts.edges) {
         setTotalNumberOfArticles(response.data.posts.edges.length);
@@ -60,7 +62,7 @@ const Home = () => {
     }
   };
 
-  const renderPostsData = (page, category) => {
+  const renderPostsData = (page: number, category: string) => {
     const start = (page - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     let newPosts = [...postsData];
@@ -74,9 +76,9 @@ const Home = () => {
 
     // ソート
     if (sortOption === 'asc') {
-      newPosts.sort((a, b) => new Date(a.node.date) - new Date(b.node.date));
+      newPosts.sort((a, b) => new Date(a.node.date).getTime() - new Date(b.node.date).getTime());
     } else if (sortOption === 'des') {
-      newPosts.sort((a, b) => new Date(b.node.date) - new Date(a.node.date));
+      newPosts.sort((a, b) => new Date(b.node.date).getTime() - new Date(a.node.date).getTime());
     }
 
     if (searchedKeyword) {
@@ -101,22 +103,22 @@ const Home = () => {
     setTotalNumberOfArticles(newPosts.length);
   };
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     renderPostsData(newPage, selectedCategory);
   };
 
-  const handleSortOrderPosts = (newSortOption) => {
+  const handleSortOrderPosts = (newSortOption: string) => {
     setSortOption(newSortOption);
   };
 
-  const handleCategoryChange = (newCategory) => {
+  const handleCategoryChange = (newCategory: string) => {
     setSelectedCategory(newCategory);
     setCurrentPage(1);
     renderPostsData(1, newCategory);
   };
 
-  const handleKeywordOrder = (newKeyword) => {
+  const handleKeywordOrder = (newKeyword: string) => {
     setSearchedKeyword(newKeyword);
     setCurrentPage(1);
     renderPostsData(1, selectedCategory);
