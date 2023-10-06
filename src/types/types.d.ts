@@ -1,9 +1,13 @@
-export type Post = {
+export interface Edge {
+  node: Post
+}
+
+export interface Post {
   id: string
   title: string
   content: string
   postId: number
-  date:string
+  date: string
   slug: string
   uri: string
   featuredImage: {
@@ -20,10 +24,6 @@ export type Post = {
     nodes: {
       name: string;
       link: string;
-    }[] | null;
-  }[] | null;
-}
-
-export type Posts = {
-  posts: Post[]
+    }[];
+  };
 }
