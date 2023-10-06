@@ -1,9 +1,9 @@
 import React from 'react';
-import type { Posts } from "../types/types";
+import { Edge } from "../types/types";
 import BlogItem from "./BlogItem";
 import Styles from "../styles/scss/components/BlogArchive.module.scss";
 
-const BlogArchive: React.FC<Posts> = ({ posts }) => {
+const BlogArchive: React.FC<{ posts: Edge[] }> = ({ posts }) => {
     return (
         <div className={Styles.blogContents}>
             <div className={Styles.blogContents__inner}>
