@@ -2,15 +2,13 @@ import * as React from "react"
 import NextLink from "next/link";
 import Image from 'next/image';
 
-
-
 interface HeaderProps {
     siteTitle: string;
 }
 
 const Header = () => (
   <header
-    className="z-10 sticky top-0 left-0 mx-auto py-2 px-3 md:py-5 md:px-5 flex items-center justify-between w-full"
+    className="sticky top-0 left-0 z-10 flex items-center justify-between w-full px-3 py-2 mx-auto md:py-5 md:px-5"
   >
     <NextLink href="/" passHref={true}>
       Blog Compilation Site
