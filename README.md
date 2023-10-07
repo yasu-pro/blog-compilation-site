@@ -9,7 +9,7 @@ Next.js,GraphQL を使用して WordPress の記事を取得してまとめサ�
 
 ## DEMO
 
-![image]()
+[movie](https://github.com/yasu-pro/blog-compilation-site/assets/61544788/9ebc539f-7a3d-4029-a88b-63261f942f3b)
 
 ## Features
 
