@@ -21,6 +21,8 @@ const Home = () => {
   const [hasMatchedResults, setHasMatchedResults] = useState(true);
   const [loading, setLoading] = useState(true);
 
+  const title = 'Blog Compilation Page';
+
   const first = 100;
   const PAGE_SIZE = 5;
 
@@ -125,7 +127,7 @@ const Home = () => {
   }
 
   return (
-    <Layout>
+    <Layout title={title}>
       {loading ? (
         <p className={Styles.loading}>
         <Image
