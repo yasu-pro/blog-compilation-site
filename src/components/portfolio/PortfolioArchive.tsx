@@ -7,7 +7,7 @@ const PortfolioArchive: React.FC<{ posts: Attributes[] }> = ({ posts }) => {
         <div>
             <div>
                 {posts.map((post, index) => (
-                    <PortfolioItem key={index} post={post} />
+                    <PortfolioItem key={index} post={post.attributes} />
                 ))}
             </div>
         </div>

@@ -1,4 +1,22 @@
 import React from 'react';
+import { Contents } from '../../graphql/types/strapiType';
+
+interface PostsData {
+    data: {
+        contents: {
+            data: Contents[];
+        };
+    };
+}
+
+interface ProcessEnv {
+    NEXT_PUBLIC_STRAPI_API_URL: string;
+}
+
+declare const process: {
+    env: ProcessEnv;
+};
+
 
 const fetchAPI = async (query: string, variables: object): Promise<PostsData> => {
     const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;

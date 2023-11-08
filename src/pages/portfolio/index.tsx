@@ -5,12 +5,12 @@ import Layout from '../../components/Layout';
 import PortfolioArchive from '../../components/portfolio/PortfolioArchive'
 import { GET_POSTS_BY_STRAPI_QUERY } from '../../graphql/StrapiGraphQLQuery';
 import Styles from "../../styles/scss/pages/top.module.scss";
+import { Contents } from "../../graphql/types/strapiType"
 
 const Portfolio = () => {
-    const [postsData, setPostsData] = useState<Edge[]>([]);
+    const [postsData, setPostsData] = useState<Contents[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<null | string>(null);
-    const [changePosts, setChangePosts] = useState<Edge[]>([]);
     const [hasMatchedResults, setHasMatchedResults] = useState(true);
 
     const first = 100;
@@ -26,19 +26,15 @@ const Portfolio = () => {
     const fetchData = async () => {
         const query = GET_POSTS_BY_STRAPI_QUERY;
         const variables = {
-          first: first,
-          after: null,
+            first: first,
+            after: null,
         };
-    
+
         try {
             const response = await strapiFetchAPI(query, variables);
-            const postDataContents = response.data?.contents?.data;
-
-            console.log(postDataContents);
-
+            const postDataContents: Contents[] = response.data?.contents?.data;
 
             setPostsData(postDataContents);
-            setChangePosts(postDataContents)
 
             if (postDataContents.length > 0) {
                 setHasMatchedResults(true);
