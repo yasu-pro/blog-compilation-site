@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Layout from '../../components/Layout';
 import strapiFetchAPI from '../api/strapiFetchAPI';
+import Layout from '../../components/Layout';
+import PortfolioArchive from '../../components/portfolio/PortfolioArchive'
 import { GET_POSTS_BY_STRAPI_QUERY } from '../../graphql/StrapiGraphQLQuery';
 import Styles from "../../styles/scss/pages/top.module.scss";
 
@@ -10,6 +11,7 @@ const Portfolio = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<null | string>(null);
     const [changePosts, setChangePosts] = useState<Edge[]>([]);
+    const [hasMatchedResults, setHasMatchedResults] = useState(true);
 
     const first = 100;
     const PAGE_SIZE = 5;
@@ -18,7 +20,7 @@ const Portfolio = () => {
 
     useEffect(() => {
         fetchData();
-      },[])
+    },[])
 
 
     const fetchData = async () => {
@@ -30,23 +32,30 @@ const Portfolio = () => {
     
         try {
             const response = await strapiFetchAPI(query, variables);
-            const postDataEdges = response.data?.contents?.data;
+            const postDataContents = response.data?.contents?.data;
 
-            console.log(postDataEdges);
-            
+            console.log(postDataContents);
 
-            setPostsData(postDataEdges);
-            setChangePosts(postDataEdges)
+
+            setPostsData(postDataContents);
+            setChangePosts(postDataContents)
+
+            if (postDataContents.length > 0) {
+                setHasMatchedResults(true);
+            } else {
+                setHasMatchedResults(false);
+            }
+
         } catch (err) {
             setError('データの取得に失敗しました');
             console.log('データの取得エラー:', err);
         } finally {
             setLoading(false);
         }
-      };
+    };
 
     return (
-        <Layout title={title}>
+        <Layout title= {title}>
             {loading ? (
                 <p className={Styles.loading}>
                     <Image
@@ -59,7 +68,18 @@ const Portfolio = () => {
                 </p>
             ) : (
                 <>
-
+                    <div className={Styles.mainContens}>
+                        {hasMatchedResults ? (
+                                <PortfolioArchive posts={postsData} />
+                            ):(
+                                <div className={Styles.noKeyword}>
+                                    <p className={Styles.noKeyword_text}>
+                                        対象の記事が見つかりませんでした。
+                                    </p>
+                                </div>
+                            )
+                        }
+                    </div>
                 </>
             )}
         </Layout>

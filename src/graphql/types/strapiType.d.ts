@@ -1,4 +1,8 @@
-export interface Contetns {
+export interface Attributes {
+    attributes: Contetns
+}
+
+export interface Contents {
     contents: {
         data: {
             id: number
@@ -23,7 +27,9 @@ export interface Contetns {
                         }
                     }
                 }
-            }
+                content: string
+                whats_new: string
+            }[];
         }
     }
     openGraphs: {

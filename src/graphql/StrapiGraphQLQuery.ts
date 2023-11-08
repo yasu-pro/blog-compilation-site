@@ -7,25 +7,27 @@ export const GET_POSTS_BY_STRAPI_QUERY = `
                 id
                 attributes {
                     title
-                        slug
+                    slug
                     image {
-                    data {
-                        attributes {
-                            url
-                        width
-                        height
+                        data {
+                            attributes {
+                                url
+                                width
+                                height
+                            }
                         }
-                    }
                     }
                     image_sp {
-                    data {
-                        attributes {
-                            url
-                        width
-                        height
+                        data {
+                            attributes {
+                                url
+                                width
+                                height
+                            }
                         }
                     }
-                    }
+                    content
+                    whats_new
                 }
             }
         }
