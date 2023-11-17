@@ -1,0 +1,85 @@
+@import '../../main.scss';
+
+.portfolioContents {
+    width: 100%;
+}
+
+.portfolioSection {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    @include md {
+        justify-content: space-between;
+    }
+
+    &:before {
+        order: 1;
+        content: '';
+        display: inline-block;
+        width: calc( 100% / 3 - 20px);
+    }
+}
+
+.portfolioItem {
+    width: 100%;
+    @include md {
+        width: calc( 100% / 3 - 20px);
+    }
+
+    &__link {
+        width: 100%;
+        display: block;
+        height: 100%;
+        transition: all .5s ease;
+
+        &:hover {
+            background-color: rgb(229 231 235)
+        }
+        padding: 15px 15px 25px;
+        border-radius: 8px;
+    }
+
+    &__heading {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 5px;
+        .title {
+            padding-left: 7px;
+            line-height: 1.5;
+            @include f-size(18);
+            @include md {
+                @include f-size(20)
+            }
+        }
+
+        .slug {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            line-height: 1.2;
+            &__text {
+                padding: 7px;
+                background-color: rgb(229 231 235);
+                border-radius: 5px;
+                @include f-size(14);
+                @include md {
+                    @include f-size(16);
+                }
+            }
+        }
+    }
+
+    &__img {
+        padding-top: 10px;
+        img {
+            width: 100%;
+            height: 200px !important;
+            object-fit: cover;
+            @include md {
+                height: 185px !important;
+            }
+        }
+    }
+}
